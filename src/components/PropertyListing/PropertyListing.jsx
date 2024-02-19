@@ -1,7 +1,9 @@
 import React from 'react';
 import PropertyCard from '../PropertyCard';
 import './PropertyListing.scss';
+import { useAPI } from '../../hooks/useAPI';
 
+// dummy data for testing
 const DUMMY_PROPERTY = {
     id: 73864112,
     bedrooms: 3,
@@ -18,16 +20,29 @@ const DUMMY_PROPERTY = {
 };
 
 const PropertyListing = () => {
+    // use a custom hook to retrieve property list from the API
+    const { loading, data, error } = useAPI();
+
     return (
-        <ul className="PropertyListing">
-            {Array(5)
-                .fill(DUMMY_PROPERTY)
-                .map((property, index) => (
-                    <li key={index}>
-                        <PropertyCard {...property} />
-                    </li>
-                ))}
-        </ul>
+        <>
+            {loading ? (
+                <p>Loading...</p>
+            ) : error ? (
+                <p>{error}</p>
+            ) : data?.length === 0 ? (
+                <p>No properties found</p>
+            ) : (
+                data && (
+                    <ul className="PropertyListing">
+                        {data.map((property) => (
+                            <li key={property.id}>
+                                <PropertyCard {...property} />
+                            </li>
+                        ))}
+                    </ul>
+                )
+            )}
+        </>
     );
 };
 
